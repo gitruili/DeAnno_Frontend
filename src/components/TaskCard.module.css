@@ -1,0 +1,9 @@
+/* components/TaskCard.module.css */
+
+.taskCard {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+  
