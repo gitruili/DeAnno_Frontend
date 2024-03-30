@@ -85,7 +85,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onReceiveTask, children 
         <div className={styles.overlay}>
             <div className={styles.modal}>
                 <button className={styles.closeButton} onClick={onClose}>X</button>
-                <main className="flex flex-col justify-center px-12 py-9 text-xs text-black bg-white max-w-[360px]">
+                <main className="flex flex-col justify-center py-9 text-xs text-black bg-white max-w-[360px]">
                     {!isReceived ? 
                         tasks.map((task, index) => (
                             <TaskItem key={index} {...task} />

@@ -20,8 +20,8 @@ import Modal from 'components/Modal';
 const sampleTasks: Task[] = [
   {
     id: 1,
-    name: 'Collect Images',
-    description: 'Gather images of dogs for the dataset.',
+    name: '图片识别1',
+    description: '识别图片中的物体.',
     rewards: 45,
     status: 'In Progress',
     received: false,
@@ -33,8 +33,8 @@ const sampleTasks: Task[] = [
   },
   {
     id: 2,
-    name: 'Data Annotation',
-    description: 'Annotate images with bounding boxes around each cat.',
+    name: '图片识别2',
+    description: '识别图片中的物体.',
     rewards: 30,
     status: 'Reviewing',
     received: false,
@@ -46,8 +46,8 @@ const sampleTasks: Task[] = [
   },
   {
     id: 3,
-    name: 'Quality Check',
-    description: 'Review annotated images of ducks for accuracy.',
+    name: '图片识别3',
+    description: '识别图片中的物体.',
     rewards: 20,
     status: 'Completed',
     received: false,

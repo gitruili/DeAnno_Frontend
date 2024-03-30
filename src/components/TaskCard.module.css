@@ -5,7 +5,8 @@
     padding: 20px;
     margin-bottom: 10px;
     border-radius: 5px;
-    max-width: 95%;
-    margin-left: 2%;
+    width: 195%;
+    /* max-width: 95%; */
+    margin-left: -47%;
   }
   

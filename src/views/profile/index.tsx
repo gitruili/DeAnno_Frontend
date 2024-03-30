@@ -1,5 +1,17 @@
-// Next, React
-import { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
+
+// Simulated profile data fetching function
+const fetchProfileData = () => {
+  // Simulate fetching updated data after a trade
+  return {
+    name: 'Daniel',
+    points: 45, // Simulate updated points after trade
+    proficiency: 350,
+    totalHours: '20h',
+    functionalities: ['积分兑现', '功能1', '功能2', '功能3', '功能4', '功能5'],
+    usdt: 25, // Simulate updated USDT after trade
+  };
+};
 
 interface UserAvatarProps {
     src: string;
@@ -13,18 +25,31 @@ interface UserAvatarProps {
   
 
 export const ProfilePage: FC = ({ }) => {
+    const [profile, setProfile] = useState(null);
     const [isNextPage, setIsNextPage] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
     const handleGetReward = () => {
         setIsNextPage(true);
     };
-    // Example profile data (replace with actual data fetching logic)
-    const profile = {
-        name: 'Daniel',
-        points: '45DAN',
-        proficiency: 350,
-        totalHours: '20h',
-        functionalities: ['积分兑现', '功能1', '功能2', '功能3', '功能4', '功能5'],
+    const handleSubmit = () => {
+        setIsNextPage(false);
+        setSubmitted(true);
+        alert('兑换成功!');
     };
+    // Example profile data (replace with actual data fetching logic)
+    // const profile = {
+    //     name: 'Daniel',
+    //     points: '45DAN',
+    //     proficiency: 350,
+    //     totalHours: '20h',
+    //     functionalities: ['积分兑现', '功能1', '功能2', '功能3', '功能4', '功能5'],
+    // };
+    useEffect(() => {
+        // Fetch profile data when the component mounts or isNextPage changes
+        const updatedProfile = fetchProfileData();
+        console.log('333');
+        setProfile(updatedProfile);
+      }, [isNextPage]); // Dependency array includes isNextPage to re-fetch on change
 
     return (
         <div className="flex flex-col pt-12 bg-white max-w-[360px]">
@@ -37,9 +62,10 @@ export const ProfilePage: FC = ({ }) => {
                     />
                     <div className="flex-auto my-auto">Daniel</div>
                 </div>
-                <div className="mt-8 text-base text-black">积分：45DAN</div>
+                {<div className="mt-8 text-base text-black">积分：{!submitted ? 45 : (45 - 11)}DAN</div>}
                 <div className="mt-5 text-base text-black">熟练度：350</div>
                 <div className="mt-5 text-base text-black">累积工作时长：20h</div>
+                <div className="mt-5 text-base text-black">余额：{!submitted ? 25 : (25 + 22)}USDT</div>
                 <div className="flex gap-5 justify-between self-start mt-10 ml-3">
                 <div className="flex flex-col items-center self-start text-xs text-black whitespace-nowrap" onClick={() => handleGetReward()}>
                     <img
@@ -105,7 +131,7 @@ export const ProfilePage: FC = ({ }) => {
                         <input 
                             disabled
                             className={`box-border flex relative flex-col shrink-0 p-2.5 mt-5 rounded border border-solid border-stone-300`}
-                            value={111}
+                            value={11}
                         />
                         {/* <ProgressBar src="https://cdn.builder.io/api/v1/image/assets/TEMP/9d8182773c637e71907f6c85572fd8649cc3d14e0d24c4b1550d3f3e53d76e13?apiKey=9090ba5df68b4a4da03d4cea998d894a&" alt="Progress bar for points" /> */}
                         </div>
@@ -118,12 +144,14 @@ export const ProfilePage: FC = ({ }) => {
                     <input
                         disabled
                         className={`box-border flex relative flex-col shrink-0 p-2.5 mt-5 rounded border border-solid border-stone-300`}
-                        value={1334411}
+                        value={22}
                     />
                     {/* <ProgressBar src="https://cdn.builder.io/api/v1/image/assets/TEMP/9d8182773c637e71907f6c85572fd8649cc3d14e0d24c4b1550d3f3e53d76e13?apiKey=9090ba5df68b4a4da03d4cea998d894a&" alt="Progress bar for cash" /> */}
                     </div>
-                    <button className="justify-center items-center self-center px-16 py-2.5 mt-11 max-w-full text-xs font-bold bg-white shadow-sm w-[199px]">
-                    确认兑换
+                    <button 
+                        onClick={() => handleSubmit()}
+                        className="justify-center items-center self-center px-16 py-2.5 mt-11 max-w-full text-xs font-bold bg-white shadow-sm w-[199px]">
+                        确认兑换
                     </button>
                 </div>
                 {/* <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/069b7ace6ee2363e6da7c340ffb753dae2f567b7cf6e7fa630ca0506e7ec4331?apiKey=9090ba5df68b4a4da03d4cea998d894a&" alt="" className="mt-52 w-full aspect-[5.56]" /> */}

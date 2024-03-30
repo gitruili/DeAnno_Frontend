@@ -7,14 +7,20 @@ interface TaskCardProps {
   task: Task;
 }
 
+const statusMapping = {
+  'In Progress': '进行中',
+  'Reviewing': '审核中',
+  'Completed': '已完成'
+};
+
 const MyTaskCard: React.FC<TaskCardProps> = ({ task }) => {
     return (
-        <div className="bg-white p-2 md:p-4 rounded-lg shadow mb-4">
-          <h2 className="text-gray-600 text-base md:text-lg font-semibold">{task.name}</h2>
-          <p className="text-gray-600">{task.description}</p>
+        <div className={`${styles.taskCard}`}>
+          <h2 className="text-base md:text-lg font-semibold">{task.name}</h2>
+          <p>{task.description}</p>
           {/* Display the task status */}
           <div className={`status ${task.received ? 'text-green-500' : 'text-yellow-500'}`}>
-            {task.received ? 'Completed' : task.status}
+            {task.received ? 'Completed' : statusMapping[task.status]}
           </div>
         </div>
     );
