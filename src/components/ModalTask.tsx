@@ -44,13 +44,13 @@ const ModalTask: React.FC<ModalProps> = ({ isOpen, onClose, onReceiveTask, child
               ))}
             </div>
             <button 
-                className="justify-center items-center self-start px-16 py-2.5 mt-32 font-bold whitespace-nowrap bg-white shadow-sm"
+                className="hover:bg-gray-100 text-gray-800 font-semibold rounded shadow justify-center items-center self-start px-16 py-2.5 m-auto mt-32 font-bold whitespace-nowrap bg-white shadow-sm"
                 onClick={handleReceiveTask}
             >
               开始任务
             </button>
             <button 
-                className="justify-center items-center self-start px-16 py-2.5 mt-5 font-bold whitespace-nowrap bg-white shadow-sm" 
+                className="hover:bg-gray-100 text-gray-800 font-semibold rounded shadow justify-center items-center self-start px-16 py-2.5 m-auto mt-5 font-bold whitespace-nowrap bg-white shadow-sm" 
                 onClick={onClose}
             >
               返回列表
@@ -77,11 +77,11 @@ const ModalTask: React.FC<ModalProps> = ({ isOpen, onClose, onReceiveTask, child
     return (
         <div className={styles.overlay}>
             <div className={styles.modal}>
-                <button className={styles.closeButton} onClick={onClose}>X</button>
+                {/* <button className={styles.closeButton} onClick={onClose}>X</button> */}
                 {/* {children} */}
                 {tasks.map((task, index) => (
-                            <TaskItem key={index} {...task} />
-                        ))}
+                    <TaskItem key={index} {...task} />
+                ))}
                 {/* {!isReceived ? (
                     // Show "Receive Task" button if task hasn't been received yet
                     <button className={styles.receiveButton} onClick={handleReceiveTask}>Start Task</button>

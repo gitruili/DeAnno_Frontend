@@ -45,13 +45,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onReceiveTask, children 
               ))}
             </div>
             <button 
-                className="justify-center items-center self-start px-16 py-2.5 mt-32 font-bold whitespace-nowrap bg-white shadow-sm"
+                className="hover:bg-gray-100 text-gray-800 font-semibold rounded shadow justify-center items-center self-start px-16 py-2.5 m-auto mt-32 font-bold whitespace-nowrap bg-white shadow-sm"
                 onClick={handleReceiveTask}
             >
               领取任务
             </button>
             <button 
-                className="justify-center items-center self-start px-16 py-2.5 mt-5 font-bold whitespace-nowrap bg-white shadow-sm" 
+                className="hover:bg-gray-100 text-gray-800 font-semibold rounded shadow justify-center items-center self-start px-16 py-2.5 m-auto mt-5 font-bold whitespace-nowrap bg-white shadow-sm" 
                 onClick={onClose}
             >
               返回大厅
@@ -84,7 +84,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onReceiveTask, children 
     return (
         <div className={styles.overlay}>
             <div className={styles.modal}>
-                <button className={styles.closeButton} onClick={onClose}>X</button>
+                {/* <button className={styles.closeButton} onClick={onClose}>X</button> */}
                 <main className="flex flex-col justify-center py-9 text-xs text-black bg-white max-w-[360px]">
                     {!isReceived ? 
                         tasks.map((task, index) => (
