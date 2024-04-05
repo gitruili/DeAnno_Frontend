@@ -16,6 +16,13 @@ import TaskCard from 'components/TaskCard';
 import BottomMenuBar from 'components/BottomMenuBar';
 import Modal from 'components/Modal';
 
+import * as anchor from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
+// import { DeAnnoTokenProgram } from 'models/de_anno_token_program';
+import { assert } from "chai"
+import { PublicKey, Transaction, SystemProgram, Connection, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import idl from "../../idl/de_anno_token_program.json";
+
 // Sample task data
 const sampleTasks: Task[] = [
   {
@@ -71,6 +78,9 @@ export const HomeView: FC = ({ }) => {
 
   const [tasks, setTasks] = useState<Task[]>(sampleTasks);
 
+  // const connection = new Connection('https://api.devnet.solana.com');
+  const programId = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
+
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task);
     setModalOpen(true);
@@ -95,15 +105,41 @@ export const HomeView: FC = ({ }) => {
     }
   }, [wallet.publicKey, connection, getUserSOLBalance])
 
-  const Card = ({ title, content }) => {
-    return (
-      // Added responsive padding classes
-      <div className="bg-white p-2 md:p-4 rounded-lg shadow mb-4">
-        <h2 className="text-base md:text-lg font-semibold">{title}</h2>
-        <p className="text-gray-600">{content}</p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const init = async () => {
+      if (wallet.publicKey) {
+        const withdraw_limit_init = new anchor.BN(100);
+        const provider = new anchor.AnchorProvider(connection, wallet, {});
+        const program = new anchor.Program(idl as anchor.Idl, programId, provider);
+    
+        const worker = anchor.web3.Keypair.generate();
+        // PDA for the data account
+        const [workerPDA] = anchor.web3.PublicKey.findProgramAddressSync(
+          [Buffer.from("worker"), worker.publicKey.toBuffer()],
+          program.programId
+        );
+    
+        try {
+          const tx = await program.methods
+            .initWorker(withdraw_limit_init)
+            .accounts({
+              worker: worker.publicKey,
+              workerData: workerPDA,
+            })
+            .signers([worker])
+            .rpc();
+          console.log("Your transaction signature", tx);
+    
+          const workerData = await program.account.workerData.fetch(workerPDA);
+          // Use workerData as needed
+        } catch (error) {
+          console.error("Error in transaction:", error);
+        }
+      }
+    };
+  
+    init(); // Call the async function
+  }, [wallet.publicKey, connection]); // Depend on wallet.publicKey and connection
 
   return (
     <div>
@@ -123,59 +159,5 @@ export const HomeView: FC = ({ }) => {
         {/* Add more task details as needed */}
       </Modal>
     </div>
-    
-    // <div className="flex flex-row justify-center">
-    //   <div className="relative group items-center">
-    //       <div className="m-1 absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-fuchsia-500 
-    //       rounded-lg blur opacity-20 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
-    //       <button
-    //           className="group w-60 m-2 btn animate-pulse bg-gradient-to-br from-indigo-500 to-fuchsia-500 hover:from-white hover:to-purple-300 text-black"
-    //       >
-    //           <div className="hidden group-disabled:block">
-    //               Wallet not connected
-    //           </div>
-    //           <span className="block group-disabled:hidden" > 
-    //               Sign Message 
-    //           </span>
-    //       </button>
-    //   </div>
-    // </div>
-    // <div className="md:hero mx-auto p-4">
-    //   <div className="md:hero-content flex flex-col">
-    //     <div className='mt-6'>
-    //     <div className='text-sm font-normal align-bottom text-right text-slate-600 mt-4'>v{pkg.version}</div>
-    //     <h1 className="text-center text-5xl md:pl-12 font-bold text-transparent bg-clip-text bg-gradient-to-br from-indigo-500 to-fuchsia-500 mb-4">
-    //       Solana Next
-    //     </h1>
-    //     </div>
-    //     <h4 className="md:w-full text-2x1 md:text-4xl text-center text-slate-300 my-2">
-    //       <p>Unleash the full power of blockchain with Solana and Next.js 13.</p>
-    //       <p className='text-slate-500 text-2x1 leading-relaxed'>Full-stack Solana applications made easy.</p>
-    //     </h4>
-    //     <div className="relative group">
-    //       <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-indigo-500 rounded-lg blur opacity-40 animate-tilt"></div>
-    //       <div className="max-w-md mx-auto mockup-code bg-primary border-2 border-[#5252529f] p-6 px-10 my-2">
-    //         <pre data-prefix=">">
-    //           <code className="truncate">{`npx create-solana-dapp <dapp-name>`} </code>
-    //         </pre>
-    //       </div>
-    //     </div>
-    //     <div className="flex flex-col mt-2">
-    //       <RequestAirdrop />
-    //       <h4 className="md:w-full text-2xl text-slate-300 my-2">
-    //       {wallet &&
-    //       <div className="flex flex-row justify-center">
-    //         <div>
-    //           {(balance || 0).toLocaleString()}
-    //           </div>
-    //           <div className='text-slate-600 ml-2'>
-    //             SOL
-    //           </div>
-    //       </div>
-    //       }
-    //       </h4>
-    //     </div>
-    //   </div>
-    // </div>
   );
 };
