@@ -2,7 +2,12 @@
 import { Task } from 'interfaces/Task';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
-// Import or define the Task interface as shown above
+import { assert } from "chai"
+import { PublicKey, Transaction, SystemProgram, Connection, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import * as anchor from "@coral-xyz/anchor";
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import idl from "../../idl/de_anno_token_program.json";
+import * as spl from "@solana/spl-token"
 
 interface ImageProps {
   src: string;
@@ -21,6 +26,18 @@ const TaskPage = () => {
   const Image: React.FC<ImageProps> = ({ src, alt, className }) => (
     <img loading="lazy" src={src} alt={alt} className={className} />
 );
+
+  const { connection } = useConnection();
+  const wallet = useWallet();
+  const programId = new PublicKey('2ckWV1BszPt6hwfjyLP4FMSrR4zxbYhkXbnJcDWpq4Q7');
+
+  // const privateKeyJson = "/Users/daniel/Code/07_Solana/.Solana_wallet/test_wallet_1.json"
+  const privateKeyString = "[61,157,51,250,97,152,118,91,250,85,71,186,200,124,127,254,26,69,138,153,117,249,210,125,188,111,77,235,239,96,159,60,10,157,225,195,79,52,43,79,13,116,144,43,203,189,29,165,200,252,41,68,152,243,186,58,214,230,179,251,251,211,37,252]";
+  // 将JSON字符串转换为Uint8Array
+  const privateKeyUint8Array = new Uint8Array(JSON.parse(privateKeyString));
+  // 从私钥创建Keypair
+  const admin = anchor.web3.Keypair.fromSecretKey(privateKeyUint8Array);
+  console.log("admin", admin);
 
   useEffect(() => {
     // Placeholder: Fetch the task by ID and set it in state
@@ -58,11 +75,63 @@ const TaskPage = () => {
   };
 
   // Submit task completion (example functionality)
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsReceived(true); 
     // alert('任务提交成功!');
     // Here, implement task submission logic
     // router.push('/tasks');
+    const provider = new anchor.AnchorProvider(connection, wallet, {});
+    const program = new anchor.Program(idl as anchor.Idl, programId, provider);
+    const userPublicKey = wallet.publicKey;
+    const [userPDA] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("worker"), userPublicKey.toBuffer()],
+      program.programId
+    );
+    const [demanderPDA] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("demander"), userPublicKey.toBuffer()],
+      program.programId
+    )
+    const [deannoTokenMintPDA] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("deanno")],
+      program.programId
+    );
+    const [deannoDataPDA] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("init")],
+      program.programId
+    )
+
+    const userTokenAccount = spl.getAssociatedTokenAddressSync(
+      deannoTokenMintPDA,
+      wallet.publicKey
+    )
+    console.log('userPublicKey', userPublicKey.toBase58())
+    console.log('userPDA', userPDA.toBase58())
+    console.log('userTokenAccount', userTokenAccount.toBase58())
+
+    const amount = new anchor.BN(50)
+    const tx = await program.methods
+      .tokenDistribution(amount)
+      .accounts({
+        worker: userPublicKey,
+        demander: userPublicKey,
+        demanderData: demanderPDA,
+        workerData: userPDA,
+        initData: deannoDataPDA,
+        workerTokenAccount: userTokenAccount,
+        deannoTokenMint: deannoTokenMintPDA,
+      })
+      .signers([admin])
+      .rpc()
+    console.log("Your transaction signature", tx)
+
+    // Check that 1 token was minted to the player's token account
+    // assert.strictEqual(
+    //   Number(
+    //     (await connection.getTokenAccountBalance(workerTokenAccount)).value
+    //       .amount
+    //   ),
+    //   50_000_000_000
+    // )
   };
 
   if (!task) return <p>Loading task details...</p>;
