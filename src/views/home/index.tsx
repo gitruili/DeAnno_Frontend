@@ -79,7 +79,7 @@ export const HomeView: FC = ({ }) => {
   const [tasks, setTasks] = useState<Task[]>(sampleTasks);
 
   // const connection = new Connection('https://api.devnet.solana.com');
-  const programId = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
+  const programId = new PublicKey('2ckWV1BszPt6hwfjyLP4FMSrR4zxbYhkXbnJcDWpq4Q7');
 
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task);
@@ -111,27 +111,36 @@ export const HomeView: FC = ({ }) => {
         const withdraw_limit_init = new anchor.BN(100);
         const provider = new anchor.AnchorProvider(connection, wallet, {});
         const program = new anchor.Program(idl as anchor.Idl, programId, provider);
-    
-        const worker = anchor.web3.Keypair.generate();
-        // PDA for the data account
-        const [workerPDA] = anchor.web3.PublicKey.findProgramAddressSync(
-          [Buffer.from("worker"), worker.publicKey.toBuffer()],
+  
+        // Use the connected user's publicKey directly
+        // No need to generate a new Keypair
+        const userPublicKey = wallet.publicKey;
+  
+        // PDA for the data account using the user's publicKey
+        const [userPDA] = anchor.web3.PublicKey.findProgramAddressSync(
+          [Buffer.from("worker"), userPublicKey.toBuffer()],
           program.programId
         );
-    
+  
         try {
           const tx = await program.methods
-            .initWorker(withdraw_limit_init)
+            .initDemander(withdraw_limit_init)
             .accounts({
-              worker: worker.publicKey,
-              workerData: workerPDA,
+              worker: userPublicKey, // Use userPublicKey here
+              workerData: userPDA,
             })
-            .signers([worker])
+            // No need to include "signers" here as the transaction will be signed by the connected wallet
             .rpc();
           console.log("Your transaction signature", tx);
-    
-          const workerData = await program.account.workerData.fetch(workerPDA);
-          // Use workerData as needed
+  
+          const userData = await program.account.workerData.fetch(userPDA);
+          // assert.strictEqual(
+          //   Number(
+          //     userData.withdrawPercent
+          //   ),
+          //   50
+          // )
+          // Use userData as needed
         } catch (error) {
           console.error("Error in transaction:", error);
         }
@@ -139,7 +148,43 @@ export const HomeView: FC = ({ }) => {
     };
   
     init(); // Call the async function
-  }, [wallet.publicKey, connection]); // Depend on wallet.publicKey and connection
+  }, [wallet.publicKey, connection]); // Depend on wallet.publicKey and connection  
+
+  // useEffect(() => {
+  //   const init = async () => {
+  //     if (wallet.publicKey) {
+  //       const withdraw_limit_init = new anchor.BN(100);
+  //       const provider = new anchor.AnchorProvider(connection, wallet, {});
+  //       const program = new anchor.Program(idl as anchor.Idl, programId, provider);
+    
+  //       const worker = anchor.web3.Keypair.generate();
+  //       // PDA for the data account
+  //       const [workerPDA] = anchor.web3.PublicKey.findProgramAddressSync(
+  //         [Buffer.from("worker"), worker.publicKey.toBuffer()],
+  //         program.programId
+  //       );
+    
+  //       try {
+  //         const tx = await program.methods
+  //           .initWorker(withdraw_limit_init)
+  //           .accounts({
+  //             worker: worker.publicKey,
+  //             workerData: workerPDA,
+  //           })
+  //           .signers([worker])
+  //           .rpc();
+  //         console.log("Your transaction signature", tx);
+    
+  //         const workerData = await program.account.workerData.fetch(workerPDA);
+  //         // Use workerData as needed
+  //       } catch (error) {
+  //         console.error("Error in transaction:", error);
+  //       }
+  //     }
+  //   };
+  
+  //   init(); // Call the async function
+  // }, [wallet.publicKey, connection]); // Depend on wallet.publicKey and connection
 
   return (
     <div>

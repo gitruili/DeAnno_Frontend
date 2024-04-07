@@ -1,4 +1,10 @@
 import React, { FC, useState, useEffect } from 'react';
+import { assert } from "chai"
+import { PublicKey, Transaction, SystemProgram, Connection, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import * as anchor from "@coral-xyz/anchor";
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import idl from "../../idl/de_anno_token_program.json";
+import * as spl from "@solana/spl-token"
 
 interface ImageProps {
     src: string;
@@ -34,16 +40,42 @@ export const ProfilePage: FC = ({ }) => {
     const [profile, setProfile] = useState(null);
     const [isNextPage, setIsNextPage] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+
+    const { connection } = useConnection();
+    const wallet = useWallet();
+    const programId = new PublicKey('2ckWV1BszPt6hwfjyLP4FMSrR4zxbYhkXbnJcDWpq4Q7');
+    const provider = new anchor.AnchorProvider(connection, wallet, {});
+    const program = new anchor.Program(idl as anchor.Idl, programId, provider);
+    const userPublicKey = wallet.publicKey;
+
     const Image: React.FC<ImageProps> = ({ src, alt, className }) => (
         <img loading="lazy" src={src} alt={alt} className={className} />
     );
     const handleGetReward = () => {
         setIsNextPage(true);
     };
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         setIsNextPage(false);
         setSubmitted(true);
         // alert('兑换成功!');
+    
+        const amount = new anchor.BN(50)
+        // const tx = await program.methods
+        //     .workerWithdraw(amount)
+        //     .accounts({
+        //     worker: worker.publicKey,
+        //     workerData: workerPDA,
+        //     initData: deannoDataPDA,
+        //     workerTokenAccount: workerTokenAccount,
+        //     workerUsdcAccount: workerUSDCAccount,
+        //     deannoTokenAccount: deannoTokenAccount,
+        //     deannoUsdcAccount: deannoUSDCAccount,
+        //     deannoTokenMint: deannoTokenMintPDA,
+        //     usdcMint: usdcTokenMint
+        //     })
+        //     .signers([worker])
+        //     .rpc()
+        // console.log("Your transaction signature", tx)
     };
     // Example profile data (replace with actual data fetching logic)
     // const profile = {
