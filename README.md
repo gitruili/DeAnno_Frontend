@@ -7,6 +7,8 @@ a decentralized application (dApp) on the Solana blockchain. It includes front-e
 ## Getting Started
 
 yarn install
+
+## Run
 yarn run dev
 
 
