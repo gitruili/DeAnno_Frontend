@@ -12,19 +12,6 @@ interface ImageProps {
     className?: string;
   }
 
-// Simulated profile data fetching function
-const fetchProfileData = () => {
-  // Simulate fetching updated data after a trade
-  return {
-    name: 'Daniel',
-    points: 45, // Simulate updated points after trade
-    proficiency: 350,
-    totalHours: '20h',
-    functionalities: ['积分兑现', '功能1', '功能2', '功能3', '功能4', '功能5'],
-    usdc: 25, // Simulate updated USDC after trade
-  };
-};
-
 interface UserAvatarProps {
     src: string;
     alt: string;
@@ -40,6 +27,20 @@ export const ProfilePage: FC = ({ }) => {
     const [profile, setProfile] = useState(null);
     const [isNextPage, setIsNextPage] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    const [points, setPoints] = useState(0);
+
+    // Simulated profile data fetching function
+    const fetchProfileData = () => {
+        // Simulate fetching updated data after a trade
+        return {
+            name: 'Daniel',
+            points: points, // Simulate updated points after trade
+            proficiency: 350,
+            totalHours: '20h',
+            functionalities: ['积分兑现', '功能1', '功能2', '功能3', '功能4', '功能5'],
+            usdc: 25, // Simulate updated USDC after trade
+        };
+    };
 
     const { connection } = useConnection();
     const wallet = useWallet();
@@ -77,19 +78,31 @@ export const ProfilePage: FC = ({ }) => {
         //     .rpc()
         // console.log("Your transaction signature", tx)
     };
-    // Example profile data (replace with actual data fetching logic)
-    // const profile = {
-    //     name: 'Daniel',
-    //     points: '45DAN',
-    //     proficiency: 350,
-    //     totalHours: '20h',
-    //     functionalities: ['积分兑现', '功能1', '功能2', '功能3', '功能4', '功能5'],
-    // };
+
+    const [deannoTokenMintPDA] = anchor.web3.PublicKey.findProgramAddressSync(
+        [Buffer.from("deanno")],
+        program.programId
+      );
+    const userTokenAccount = spl.getAssociatedTokenAddressSync(
+        deannoTokenMintPDA,
+        wallet.publicKey
+    );
+
     useEffect(() => {
         // Fetch profile data when the component mounts or isNextPage changes
         const updatedProfile = fetchProfileData();
         setProfile(updatedProfile);
       }, [isNextPage]); // Dependency array includes isNextPage to re-fetch on change
+
+      useEffect(() => {
+        async function fetchData() {
+            const points = Number((await connection.getTokenAccountBalance(userTokenAccount)).value.amount) / LAMPORTS_PER_SOL;
+            console.log('points', points);
+            setPoints(points);
+        }
+    
+        fetchData();
+    });
 
     return (
         <div className="flex flex-col pt-12 bg-white max-w-[360px]">
@@ -102,10 +115,10 @@ export const ProfilePage: FC = ({ }) => {
                     />
                     <div className="flex-auto my-auto">Daniel</div>
                 </div>
-                {<div className="mt-8 text-base text-black">积分：{!submitted ? 45 : (45 - 11)}DAN</div>}
-                <div className="mt-5 text-base text-black">熟练度：350</div>
-                <div className="mt-5 text-base text-black">累积工作时长：20h</div>
-                <div className="mt-5 text-base text-black">余额：{!submitted ? 25 : (25 + 22)}USDC</div>
+                {<div className="mt-8 text-base text-black">Points：{!submitted ? points : (points - 11)}DAN</div>}
+                <div className="mt-5 text-base text-black">Skill Level：350</div>
+                <div className="mt-5 text-base text-black">Working Hours：20h</div>
+                <div className="mt-5 text-base text-black">Amount：{!submitted ? 25 : (25 + 22)}USDC</div>
                 <div className="flex gap-5 justify-between self-start mt-10 ml-3">
                     <div className="flex flex-col items-center self-start text-xs text-black whitespace-nowrap" onClick={() => handleGetReward()}>
                         <img
@@ -113,13 +126,13 @@ export const ProfilePage: FC = ({ }) => {
                         src="https://cdn.builder.io/api/v1/image/assets/TEMP/ecdcef207689c13371fecd88308895e4363a44e2d016649f1e2010ff9adb72a6?apiKey=9090ba5df68b4a4da03d4cea998d894a&"
                         className="aspect-square w-[25px]"
                         />
-                        <div className="self-stretch mt-2.5">积分兑现</div>
+                        <div className="self-stretch mt-2.5">Points trade</div>
                         <img
                         loading="lazy"
                         src="https://cdn.builder.io/api/v1/image/assets/TEMP/7fab1fb8d9b23dbe18b547c3d57f20af77055bc7e1bb16ba8c101e5adbb77ad8?apiKey=9090ba5df68b4a4da03d4cea998d894a&"
                         className="mt-9 aspect-square w-[25px]"
                         />
-                        <div className="self-stretch mt-2.5">积分兑现</div>
+                        <div className="self-stretch mt-2.5">Points transfer</div>
                     </div>
                     <div className="flex flex-col items-center self-start text-xs text-black whitespace-nowrap" onClick={() => handleGetReward()}>
                         <img
@@ -127,13 +140,13 @@ export const ProfilePage: FC = ({ }) => {
                         src="https://cdn.builder.io/api/v1/image/assets/TEMP/ecdcef207689c13371fecd88308895e4363a44e2d016649f1e2010ff9adb72a6?apiKey=9090ba5df68b4a4da03d4cea998d894a&"
                         className="aspect-square w-[25px]"
                         />
-                        <div className="self-stretch mt-2.5">积分兑现</div>
+                        <div className="self-stretch mt-2.5">Points exchange</div>
                         <img
                         loading="lazy"
                         src="https://cdn.builder.io/api/v1/image/assets/TEMP/7fab1fb8d9b23dbe18b547c3d57f20af77055bc7e1bb16ba8c101e5adbb77ad8?apiKey=9090ba5df68b4a4da03d4cea998d894a&"
                         className="mt-9 aspect-square w-[25px]"
                         />
-                        <div className="self-stretch mt-2.5">积分兑现</div>
+                        <div className="self-stretch mt-2.5">Points reward</div>
                     </div>
                     <div className="flex flex-col items-center self-start text-xs text-black whitespace-nowrap" onClick={() => handleGetReward()}>
                         <img
@@ -141,13 +154,13 @@ export const ProfilePage: FC = ({ }) => {
                         src="https://cdn.builder.io/api/v1/image/assets/TEMP/ecdcef207689c13371fecd88308895e4363a44e2d016649f1e2010ff9adb72a6?apiKey=9090ba5df68b4a4da03d4cea998d894a&"
                         className="aspect-square w-[25px]"
                         />
-                        <div className="self-stretch mt-2.5">积分兑现</div>
+                        <div className="self-stretch mt-2.5">Points shops</div>
                         <img
                         loading="lazy"
                         src="https://cdn.builder.io/api/v1/image/assets/TEMP/7fab1fb8d9b23dbe18b547c3d57f20af77055bc7e1bb16ba8c101e5adbb77ad8?apiKey=9090ba5df68b4a4da03d4cea998d894a&"
                         className="mt-9 aspect-square w-[25px]"
                         />
-                        <div className="self-stretch mt-2.5">积分兑现</div>
+                        <div className="self-stretch mt-2.5">Points claim</div>
                     </div>
                 </div>
             </div>
@@ -161,7 +174,7 @@ export const ProfilePage: FC = ({ }) => {
                     <div className="flex gap-1.5 mt-16">
                     <div className="flex flex-col">
                         <div className="flex gap-4">
-                        <p className="grow my-auto">积分：</p>
+                        <p className="grow my-auto">Points：</p>
                         <input 
                             disabled
                             className={`box-border flex relative flex-col shrink-0 p-2.5 mt-5 rounded border border-solid border-stone-300`}
@@ -173,7 +186,7 @@ export const ProfilePage: FC = ({ }) => {
                     <p className="self-start mt-3">max</p>
                     </div>
                     <div className="flex gap-4 self-center mt-2">
-                    <p className="grow my-auto">现金：</p>
+                    <p className="grow my-auto">Cash：</p>
                     <input
                         disabled
                         className={`box-border flex relative flex-col shrink-0 p-2.5 mt-5 rounded border border-solid border-stone-300`}
@@ -183,13 +196,13 @@ export const ProfilePage: FC = ({ }) => {
                     <button 
                         onClick={() => handleSubmit()}
                         className="justify-center items-center self-center px-16 py-2.5 mt-11 max-w-full text-xs font-bold bg-white shadow-sm w-[199px]">
-                        确认兑换
+                        Confirm
                     </button>
                 </div> 
                 :
                 <div className="flex gap-1.5 self-center px-5 mt-44">
                     <Image src="https://cdn.builder.io/api/v1/image/assets/TEMP/e1d88e9d106110ab92f6fa724fdf11f92ca92d242141de4940273723d38204bc?apiKey=9090ba5df68b4a4da03d4cea998d894a&" alt="" className="shrink-0 aspect-square w-[30px]" />
-                    <p className="my-auto">兑换成功！</p>
+                    <p className="my-auto">Withdraw successful！</p>
                 </div>
                 }
             </div>

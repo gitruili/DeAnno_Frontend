@@ -8,9 +8,9 @@ interface TaskCardProps {
 }
 
 const statusMapping = {
-  'In Progress': '进行中',
-  'Reviewing': '审核中',
-  'Completed': '已完成'
+  'In Progress': 'In Progress',
+  'Reviewing': 'Reviewing',
+  'Completed': 'Completed'
 };
 
 const MyTaskCard: React.FC<TaskCardProps> = ({ task }) => {

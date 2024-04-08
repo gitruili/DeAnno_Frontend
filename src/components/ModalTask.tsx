@@ -1,12 +1,14 @@
 // components/Modal.tsx
 import React, { useState } from 'react';
 import styles from './Modal.module.css'; // Assume CSS module for styling
+import { Task } from 'interfaces/Task';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   onReceiveTask: () => void; // Function to call when receiving the task
   children: React.ReactNode;
+  task: Task;
 }
 
 interface TaskItemProps {
@@ -23,8 +25,9 @@ interface ImageProps {
   }
 
 
-const ModalTask: React.FC<ModalProps> = ({ isOpen, onClose, onReceiveTask, children }) => {
+const ModalTask: React.FC<ModalProps> = ({ isOpen, onClose, onReceiveTask, children, task }) => {
     const [isReceived, setIsReceived] = useState(false);
+
 
     const handleReceiveTask = () => {
         onReceiveTask();
@@ -34,26 +37,28 @@ const ModalTask: React.FC<ModalProps> = ({ isOpen, onClose, onReceiveTask, child
     const TaskItem: React.FC<TaskItemProps> = ({ taskNumber, taskContent, targets, imageUrl }) => {
         return (
           <div className="flex flex-col px-8 py-6 bg-zinc-300">
-            <div>
-              任务{taskNumber}： {taskContent} 示例：{" "}
+             <div>
+                {task.name}
+              {/* Task{taskNumber}： {taskContent} Sample：{" "} */}
             </div>
-            <img src={imageUrl} alt="Task example" className="self-center mt-5 aspect-[1.67] w-[205px]" />
+            <img src={task.images[0]} alt="Task example" className="self-center mt-5 aspect-[1.67] w-[205px]" />
             <div className="mt-5">
-              {targets.map((target, index) => (
-                <div key={index}>目标{index + 1}：{target}</div>
-              ))}
+                {task.description}
+              {/* {targets.map((target, index) => (
+                <div key={index}>Target{index + 1}：{target}</div>
+              ))} */}
             </div>
             <button 
                 className="hover:bg-gray-100 text-gray-800 font-semibold rounded shadow justify-center items-center self-start px-16 py-2.5 m-auto mt-32 font-bold whitespace-nowrap bg-white shadow-sm"
                 onClick={handleReceiveTask}
             >
-              开始任务
+              Start Task
             </button>
             <button 
                 className="hover:bg-gray-100 text-gray-800 font-semibold rounded shadow justify-center items-center self-start px-16 py-2.5 m-auto mt-5 font-bold whitespace-nowrap bg-white shadow-sm" 
                 onClick={onClose}
             >
-              返回列表
+              Go Back
             </button>
           </div>
         );

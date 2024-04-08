@@ -11,39 +11,52 @@ import ModalTask from 'components/ModalTask';
 const sampleTasks: Task[] = [
   {
     id: 1,
-    name: '图片识别1',
-    description: '识别图片中的物体.',
+    name: 'task1: image classification',
+    description: 'Please write one or more of the following targets in the diagram, separated by semicolons.',
     rewards: 45,
     status: 'In Progress',
     received: false,
     images: [
-      '/path/to/image1.jpg',
+      './dog.png',
       '/path/to/image2.jpg',
       // Add more image paths as required
     ],
   },
   {
     id: 2,
-    name: '图片识别2',
-    description: '识别图片中的物体.',
+    name: 'task2: image detection',
+    description: 'Please use a rectangular box to mark the vehicles in the following image.',
     rewards: 30,
     status: 'Reviewing',
     received: false,
     images: [
-      '/path/to/image1.jpg',
+      './car.png',
       '/path/to/image2.jpg',
       // Add more image paths as required
     ],
   },
   {
     id: 3,
-    name: '图片识别3',
-    description: '识别图片中的物体.',
+    name: 'task3: image translation',
+    description: 'Please describe the content in the following image with a paragraph of text.',
     rewards: 20,
     status: 'Completed',
     received: false,
     images: [
-      '/path/to/image1.jpg',
+      './man.png',
+      '/path/to/image2.jpg',
+      // Add more image paths as required
+    ],
+  },
+  {
+    id: 4,
+    name: 'task4: human keypoint detection',
+    description: 'Please mark the key points of the human figure in the following order: nose, left and right eyes, left and right ears, left and right shoulders, left and right elbows, left and right wrists, left and right buttocks, left and right knees, and left and right ankles.',
+    rewards: 20,
+    status: 'Completed',
+    received: false,
+    images: [
+      './people.png',
       '/path/to/image2.jpg',
       // Add more image paths as required
     ],
@@ -96,7 +109,8 @@ export const TasksView: FC = ({ }) => {
       <ModalTask 
         isOpen={isModalOpen} 
         onClose={() => setModalOpen(false)}
-        onReceiveTask={() => handleReceiveTask(selectedTask?.id)}>
+        onReceiveTask={() => handleReceiveTask(selectedTask?.id)}
+        task={selectedTask}>
         {/* Render selected task details here */}
         <h2>{selectedTask?.name}</h2>
         <p>{selectedTask?.description}</p>

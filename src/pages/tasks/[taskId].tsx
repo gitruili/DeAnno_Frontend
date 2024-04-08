@@ -44,14 +44,27 @@ const TaskPage = () => {
     // For this example, task data is hardcoded. Replace with your fetching logic.
     const fetchedTask: Task = {
       id: 1,
-      name: '任务示例1',
-      description: '任务说明：填写图中的物体.',
+      name: 'task1',
+      description: 'Please write one or more of the following targets in the diagram, separated by semicolons.',
       rewards: 50,
       status: 'In Progress',
       received: false,
       images: [
-        '/dog.jpg',
-        '/plane.jpg',
+        '/1.jpg',
+        '/2.jpg',
+        '/3.jpg',
+        '/4.jpg',
+        '/5.jpg',
+        '/6.jpg',
+        '/7.jpg',
+        '/8.jpg',
+        '/9.jpg',
+        '/10.jpg',
+        '/11.jpg',
+        '/12.jpg',
+        '/13.jpg',
+        '/14.jpg',
+        '/15.jpg',
         // Add more image paths as required
       ],
     };
@@ -112,6 +125,7 @@ const TaskPage = () => {
     const tx = await program.methods
       .tokenDistribution(amount)
       .accounts({
+        admin: admin.publicKey,
         worker: userPublicKey,
         demander: userPublicKey,
         demanderData: demanderPDA,
@@ -166,7 +180,7 @@ const TaskPage = () => {
       </> : 
         <div className="flex gap-1.5 self-center px-5 mt-44">
           <Image src="https://cdn.builder.io/api/v1/image/assets/TEMP/e1d88e9d106110ab92f6fa724fdf11f92ca92d242141de4940273723d38204bc?apiKey=9090ba5df68b4a4da03d4cea998d894a&" alt="" className="shrink-0 aspect-square w-[30px]" />
-          <p className="my-auto">任务完成！</p>
+          <p className="my-auto">Task Completed！</p>
         </div>
       }
     </div>
