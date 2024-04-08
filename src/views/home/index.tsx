@@ -124,7 +124,7 @@ export const HomeView: FC = ({ }) => {
   
         try {
           const tx = await program.methods
-            .initDemander(withdraw_limit_init)
+            .initWorker(withdraw_limit_init)
             .accounts({
               worker: userPublicKey, // Use userPublicKey here
               workerData: userPDA,
